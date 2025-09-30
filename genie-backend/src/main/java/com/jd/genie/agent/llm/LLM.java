@@ -591,8 +591,10 @@ public class LLM {
                 public void onResponse(Call call, Response response) throws IOException {
                     try (ResponseBody responseBody = response.body()) {
                         if (!response.isSuccessful()) {
+                            String errorBody = responseBody != null ? responseBody.string() : "null";
+                            log.error("API Error - Code: {}, Body: {}", response.code(), errorBody);
                             future.completeExceptionally(
-                                    new IOException("Unexpected response code: " + response)
+                                    new IOException("Unexpected response code: " + response + ", body: " + errorBody)
                             );
                         } else {
                             future.complete(responseBody.string());
@@ -648,8 +650,9 @@ public class LLM {
                     boolean isContent = true;
                     try (ResponseBody responseBody = response.body()) {
                         if (!response.isSuccessful() || responseBody == null) {
-                            log.error("{} ask tool stream response error or empty", context.getRequestId());
-                            future.completeExceptionally(new IOException("Unexpected response code: " + response));
+                            String errorBody = responseBody != null ? responseBody.string() : "null";
+                            log.error("{} ask tool stream response error - Code: {}, Body: {}", context.getRequestId(), response.code(), errorBody);
+                            future.completeExceptionally(new IOException("Unexpected response code: " + response + ", body: " + errorBody));
                             return;
                         }
 
@@ -840,8 +843,9 @@ public class LLM {
                     boolean isContent = true;
                     try (ResponseBody responseBody = response.body()) {
                         if (!response.isSuccessful() || responseBody == null) {
-                            log.error("{} ask tool stream response error or empty", context.getRequestId());
-                            future.completeExceptionally(new IOException("Unexpected response code: " + response));
+                            String errorBody = responseBody != null ? responseBody.string() : "null";
+                            log.error("{} ask tool stream response error - Code: {}, Body: {}", context.getRequestId(), response.code(), errorBody);
+                            future.completeExceptionally(new IOException("Unexpected response code: " + response + ", body: " + errorBody));
                             return;
                         }
 
